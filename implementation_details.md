@@ -1,8 +1,8 @@
-# Implementation Details
+# Detalles de implementación
 
-## Proposed Architecture 
+## Arquitectura propuesta
 
-The methods implemented are inspired by DeepMind's original post. Two different residual neural networks (ResNets) are used to predict **angles** between adjacent aminoacids (AAs) and **distance** between every pair of AAs of a protein. For distance prediction a 2D Resnet was used while for angles prediction a 1D Resnet was used.
+Los métodos implementados están inspirados en la publicación original de DeepMind. Se utilizan dos redes neuronales residuales diferentes (ResNets) para predecir ** ángulos ** entre aminoácidos adyacentes (AA) y ** distancia ** entre cada par de AA de una proteína. Para la predicción de distancia se usó un Resnet 2D mientras que para la predicción de ángulos se utilizó un Resnet 1D.
 
 <div style="text-align:center">
 	<img src="https://storage.googleapis.com/deepmind-live-cms/images/Origami-CASP-181127-r01_fig4-method.width-980.png" width="600" height="400">
@@ -12,17 +12,19 @@ Image from DeepMind's original blogpost.
 
 ### Distance prediction
 
-The ResNet for distance prediction is built as a 2D-ResNet and takes as input tensors of shape LxLxN (a normal image would be LxLx3). The window length is set to 200 (we only train and predict proteins of less than 200 AAs) and smaller proteins are padded to match the window size. No larger proteins nor crops of larger proteins are used.
+### Predicción de distancia
 
-The 41 channels of the input are distributed as follows: 20 for AAs in one-hot encoding (LxLx20), 1 for the Van der Waals radius of the AA encoded previously and 20 channels for the Position Specific Scoring Matrix).
+La ResNet para la predicción de distancia se construye como una ResNet 2D y toma como tensores de entrada de forma LxLxN (una imagen normal sería LxLx3). La longitud de la ventana se establece en 200 (solo entrenamos y predecimos proteínas de menos de 200 AA) y las proteínas más pequeñas se rellenan para coincidir con el tamaño de la ventana. No se utilizan proteínas más grandes ni cultivos de proteínas más grandes.
 
-The network is comprised of packs of residual blocks with the architecture below illustrated with blocks cycling through 1,2,4 and 8 strides plus a first normal convolutional layer and the last convolutional layer where a Softmax activation function is applied to get an output of LxLx7 (6 classes for different distance + 1 trash class for the padding that is less penalized).
+Los 41 canales de la entrada se distribuyen de la siguiente manera: 20 para AA en codificación de un solo calor (LxLx20), 1 para el radio Van der Waals del AA codificado previamente y 20 canales para la Matriz de puntuación específica de posición).
+
+La red se compone de paquetes de bloques residuales con la arquitectura a continuación ilustrada con bloques que recorren 1,2,4 y 8 zancadas más una primera capa convolucional normal y la última capa convolucional donde se aplica una función de activación Softmax para obtener una salida de LxLx7 (6 clases para diferentes distancias + 1 clase de basura para el relleno que está menos penalizado).
 
 <div style="text-align:center">
 	<img src="imgs/elu_resnet_2d.png">
 </div>
 
-Architecture of the residual block used. A mini version of the block in [this description](http://predictioncenter.org/casp13/doc/presentations/Pred_CASP13-DeepLearning-AlphaFold-Senior.pdf)
+Arquitectura del bloque residual utilizado. Una mini versión del bloque en [this description](http://predictioncenter.org/casp13/doc/presentations/Pred_CASP13-DeepLearning-AlphaFold-Senior.pdf)
 
 The network has been trained with 134 proteins and evaluated with 16 more. Clearly unsufficient data, but memory constraints didn't allow for more. Comparably, AlphaFold was trained with 29k proteins.
 
