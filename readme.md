@@ -2,7 +2,7 @@
 
 
 
-## Reproducing the results
+## Pasos para reproducir el ejemplo
 
 Estos son los siguientes pasos para ejecutar el código localmente o en la nube:
 
